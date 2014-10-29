@@ -33,11 +33,11 @@ Run mock tests including load test in Docker container:
 
 Run Node app.js in production mode in Docker container:
 
-    $ sudo docker run --name api-02 --rm -p 8085:8085 -e NODE_ENV=prod node-api-exp-03:1.0.0
+    $ sudo docker run --name api-03 --rm -p 8085:8085 -e NODE_ENV=prod node-api-exp-03:1.0.0
 
 Run bash in Docker container:
 
-    $ sudo docker run --name api-02 --rm -i -t -p 8085:8085 node-api-exp-03:1.0.0 /bin/bash
+    $ sudo docker run --name api-03 --rm -i -t -p 8085:8085 node-api-exp-03:1.0.0 /bin/bash
 
 ### Permit Jenkins to run Docker ###
 
