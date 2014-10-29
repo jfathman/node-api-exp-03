@@ -11,12 +11,28 @@ var express      = require('express');
 var basicAuth    = require('basic-auth');
 var bodyParser   = require('body-parser');
 var cookieParser = require('cookie-parser');
+var redis        = require('redis');
 
 var port = process.env.HTTP_PORT || 8085;
 
-console.log('app mode:', process.env.NODE_ENV);
+console.log(Date(), 'app mode:', process.env.NODE_ENV);
 
 var testMode = process.env.NODE_ENV === 'test';
+
+var redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || 'localhost';
+var redisPort = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
+
+console.log(Date(), 'redis server:', redisHost + ':' + redisPort);
+
+var redisClient = redis.createClient(redisPort, redisHost);
+
+redisClient.on('error', function(err) {
+  console.log(Date(), 'redis error:', err);
+});
+
+redisClient.on('ready', function() {
+  console.log(Date(), 'redis ready');
+});
 
 var app = express();
 

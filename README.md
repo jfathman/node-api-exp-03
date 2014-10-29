@@ -7,6 +7,7 @@
   * API mock tests using Mocha, Chai, Supertest, Loadtest
   * Node.js
   * Express 4
+  * Redis
   * Docker
   * Fig
   * Jenkins CI server
