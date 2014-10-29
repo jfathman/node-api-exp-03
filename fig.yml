@@ -1,0 +1,21 @@
+# fig.yml
+
+mongodb:
+  image: mongo:2.6.5
+  ports:
+   - 27017
+
+redis:
+  image: redis:2.8.17
+  ports:
+   - 6379
+
+app:
+  build: .
+  ports:
+   - 8085:8085
+  links:
+   - mongodb
+   - redis
+  environment:
+   - NODE_ENV=prod
