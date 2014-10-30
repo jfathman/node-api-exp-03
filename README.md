@@ -8,6 +8,7 @@
   * Node.js
   * Express 4
   * Redis
+  * MongoDB
   * Docker
   * Fig
   * Jenkins CI server

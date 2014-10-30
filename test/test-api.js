@@ -27,20 +27,15 @@ describe('Test API REST API', function() {
     done();
   });
 
-  // success use cases:
-
-  it('GET /abc/123, expect 200 OK', function(done) {
-    request.get('/abc/123').auth(testUsername, testPassword)
-      .expect(200, done);
-  });
-
-  it('PUT /abc/123, expect 200 OK', function(done) {
-    request.put('/abc/123').auth(testUsername, testPassword)
-      .expect(200, done);
-  });
+  // test cases:
 
   it('POST /abc/123, expect 200 OK', function(done) {
     request.post('/abc/123').auth(testUsername, testPassword)
+      .expect(200, done);
+  });
+
+  it('GET /abc/123, expect 200 OK', function(done) {
+    request.get('/abc/123').auth(testUsername, testPassword)
       .expect(200, done);
   });
 
@@ -49,7 +44,20 @@ describe('Test API REST API', function() {
       .expect(200, done);
   });
 
-  // failure use cases:
+  it('GET /abc/123, expect 400 Bad Request', function(done) {
+    request.get('/abc/123').auth(testUsername, testPassword)
+      .expect(400, done);
+  });
+
+  it('PUT /abc/123, expect 200 OK', function(done) {
+    request.put('/abc/123').auth(testUsername, testPassword)
+      .expect(200, done);
+  });
+
+  it('GET /abc/123, expect 200 OK', function(done) {
+    request.get('/abc/123').auth(testUsername, testPassword)
+      .expect(200, done);
+  });
 
   it('GET /abc/123, invalid auth user, expect 401 Unauthorized', function(done) {
     request.get('/abc/123').auth(testInvalidUsername, testPassword)
@@ -80,5 +88,17 @@ describe('Test API REST API', function() {
       (result.totalTimeSeconds < 30).should.equal(true);
       done();
     });
+  });
+
+  // clean up:
+
+  it('DELETE /abc/123, expect 200 OK', function(done) {
+    request.delete('/abc/123').auth(testUsername, testPassword)
+      .expect(200, done);
+  });
+
+  it('GET /abc/123, expect 400 Bad Request', function(done) {
+    request.get('/abc/123').auth(testUsername, testPassword)
+      .expect(400, done);
   });
 });
