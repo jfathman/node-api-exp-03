@@ -35,6 +35,8 @@ var userSchema = new mongoose.Schema({
 
 var User = mongoose.model('User', userSchema);
 
+void User; // jmf temp
+
 console.log(Date(), 'app mode:', process.env.NODE_ENV);
 
 async.series(
@@ -72,7 +74,7 @@ function startMongoDb(callback) {
 
   var dbUri = 'mongodb://' + mongoDbHost + ':' + mongoDbPort + '/' + collection;
 
-  var db = mongoose.connect(dbUri);
+  db = mongoose.connect(dbUri);
 
   db.connection.on('error', function(err) {
     console.log(Date(), 'db error:', err);

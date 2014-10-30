@@ -6,11 +6,9 @@ FROM ubuntu:14.04
 
 MAINTAINER jfathman
 
-RUN apt-get update               >/install.log 2>&1
-RUN apt-get -y upgrade          >>/install.log 2>&1
-RUN apt-get -y install jq       >>/install.log 2>&1
-RUN apt-get -y install wget     >>/install.log 2>&1
-RUN apt-get -y install fakeroot >>/install.log 2>&1
+RUN apt-get update >/install.log 2>&1
+RUN apt-get -y upgrade >>/install.log 2>&1
+RUN apt-get -y install jq wget fakeroot python build-essential >>/install.log 2>&1
 
 ENV APP_DIR /opt/app/
 
