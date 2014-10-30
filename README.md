@@ -41,6 +41,28 @@ Run bash in Docker container:
 
     $ sudo docker run --name api-03 --rm -i -t -p 8085:8085 node-api-exp-03:1.0.0 /bin/bash
 
+### Fig ###
+
+Build services:
+
+    $ sudo fig build
+
+Run mock tests including load test in Fig orchestrated containers:
+
+    $ sudo fig run app grunt test
+    $ sudo fig stop
+    $ sudo fig rm --force
+
+Run Node app.js in production mode in Fig orchestrated containers:
+
+    $ sudo fig up
+    $ sudo fig stop
+    $ sudo fig rm --force
+
+Run bash in Fig app container:
+
+    $ sudo fig run app bash
+
 ### Permit Jenkins to run Docker ###
 
     $ sudo usermod -a -G docker jenkins
