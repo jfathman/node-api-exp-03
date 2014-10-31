@@ -275,7 +275,7 @@ function userDelete(req, res) {
   process.on(signal, function() {
     console.log();
     console.log(Date(), 'server received signal', signal);
-    process.exit(1);
+    process.exit(signal === 'SIGTERM' ? 0 : 1);
   });
 });
 
