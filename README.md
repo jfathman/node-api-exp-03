@@ -29,10 +29,6 @@ Retrieve build artifacts from Docker container:
 
     $ sudo docker run --rm -v ${PWD}:/mnt node-api-exp-03:1.0.0 /bin/bash -c 'cp artifacts/* /mnt/.'
 
-Run mock tests including load test in Docker container:
-
-    $ sudo docker run --rm node-api-exp-03:1.0.0 grunt test
-
 Run Node app.js in production mode in Docker container:
 
     $ sudo docker run --name api-03 --rm -p 8085:8085 -e NODE_ENV=prod node-api-exp-03:1.0.0
@@ -49,7 +45,7 @@ Build services:
 
 Run mock tests including load test in Fig orchestrated containers:
 
-    $ sudo fig run app grunt test
+    $ sudo fig run --rm app grunt test
     $ sudo fig stop
     $ sudo fig rm --force
 
@@ -59,9 +55,11 @@ Run Node app.js in production mode in Fig orchestrated containers:
     $ sudo fig stop
     $ sudo fig rm --force
 
-Run bash in Fig app container:
+Run bash in Fig orchestrated container:
 
-    $ sudo fig run app bash
+    $ sudo fig run --rm app bash
+    $ sudo fig run --rm mongodb bash
+    $ sudo fig run --rm redis bash
 
 ### Permit Jenkins to run Docker ###
 
