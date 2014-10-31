@@ -1,10 +1,5 @@
 // app.js
 
-// $ curl --user jmf:1234 http://<ip>:<port>/api/v1/abc/123 -i -X GET
-// $ curl --user jmf:1234 http://<ip>:<port>/api/v1/abc/123 -i -X PUT
-// $ curl --user jmf:1234 http://<ip>:<port>/api/v1/abc/123 -i -X POST
-// $ curl --user jmf:1234 http://<ip>:<port>/api/v1/abc/123 -i -X DELETE
-
 'use strict';
 
 var async        = require('async');
@@ -29,13 +24,14 @@ var redisClient = null;
 var collection = 'api_users';
 
 var userSchema = new mongoose.Schema({
-  name: String,
-  createdOn: { type: Date, default: Date.now },
+  user:   String,
+  domain: String,
+  count:   { type: Number, default: 1 },
+  created: { type: Date, default: Date.now },
+  updated: { type: Date, default: Date.now },
 });
 
 var User = mongoose.model('User', userSchema);
-
-void User; // jmf temp
 
 console.log(Date(), 'app mode:', process.env.NODE_ENV);
 
@@ -132,71 +128,19 @@ function startExpress(callback) {
   // routes
 
   app.get(apiUrl + '/:domain/:user', function(req, res) {
-    redisClient.get(req.params.user, function(err, domain) {
-      if (err) {
-        console.log(Date(), 'redis error:', err);
-        res.status(503).end(); // Service Unavailable
-      } else {
-        if (domain === null) {
-          if (!testMode) {
-            console.log(Date(), 'redis not found:', req.params.user);
-          }
-          res.status(400).end(); // Bad Request
-        } else {
-          if (!testMode) {
-            console.log(Date(), 'redis get:', req.params.user, domain);
-          }
-          res.send(req.method + ' domain: ' + req.params.domain + ' user: ' + req.params.user + '\n');
-        }
-      }
-    });
+    userGet(req, res);
   });
 
   app.put(apiUrl + '/:domain/:user', function(req, res) {
-    redisClient.set(req.params.user, req.params.domain, function(err) {
-      if (err) {
-        console.log(Date(), 'redis error:', err);
-        res.status(503).end(); // Service Unavailable
-      } else {
-        if (!testMode) {
-          console.log(Date(), 'redis set:', req.params.user, req.params.domain);
-        }
-        res.send(req.method + ' domain: ' + req.params.domain + ' user: ' + req.params.user + '\n');
-      }
-    });
+    userUpdate(req, res);
   });
 
   app.post(apiUrl + '/:domain/:user', function(req, res) {
-    redisClient.set(req.params.user, req.params.domain, function(err) {
-      if (err) {
-        console.log(Date(), 'redis error:', err);
-        res.status(503).end(); // Service Unavailable
-      } else {
-        if (!testMode) {
-          console.log(Date(), 'redis set:', req.params.user, req.params.domain);
-        }
-        res.send(req.method + ' domain: ' + req.params.domain + ' user: ' + req.params.user + '\n');
-      }
-    });
+    userUpdate(req, res);
   });
 
   app.delete(apiUrl + '/:domain/:user', function(req, res) {
-    redisClient.del(req.params.user, function(err, count) {
-      if (err) {
-        console.log(Date(), 'redis error:', err);
-        res.status(503).end(); // Service Unavailable
-      } else {
-        if (count < 1) {
-          console.log(Date(), 'redis not found:', req.params.user);
-          res.status(400).end(); // Bad Request
-        } else {
-          if (!testMode) {
-            console.log(Date(), 'redis del:', req.params.user, count);
-          }
-          res.send(req.method + ' domain: ' + req.params.domain + ' user: ' + req.params.user + '\n');
-        }
-      }
-    });
+    userDelete(req, res);
   });
 
   // catch-all handler for invalid routes
@@ -214,6 +158,113 @@ function startExpress(callback) {
     // grunt-express-server waits for 'server started' to begin mock test
     console.log(Date(), 'server started port:', expressPort);
     callback(null);
+  });
+}
+
+function userGet(req, res) {
+  redisClient.get(req.params.user, function(err, domain) {
+    if (err) {
+      console.log(Date(), 'redis error:', err);
+      res.status(503).end(); // Service Unavailable
+    } else {
+      if (domain === null) {
+        if (!testMode) {
+          console.log(Date(), 'redis not found:', req.params.user);
+        }
+        res.status(400).end(); // Bad Request
+      } else {
+        if (!testMode) {
+          console.log(Date(), 'redis get:', req.params.user, domain);
+        }
+        User.findOne({ user: req.params.user }, function(err, doc) {
+          if (err) {
+            console.log(Date(), 'db error:', err);
+            res.status(503).end(); // Service Unavailable
+          } else {
+            if (!doc) {
+              if (!testMode) {
+                console.log(Date(), 'db not found:', req.params.user);
+              }
+              res.status(400).end(); // Bad Request
+            } else {
+              if (!testMode) {
+                console.log(Date(), 'db found:', doc.user, doc.domain, doc.count);
+              }
+              res.send(req.method + ': ' + doc.user + ' ' + doc.domain + ' ' + doc.count + '\n');
+            }
+          }
+        });
+      }
+    }
+  });
+}
+
+function userUpdate(req, res) {
+  redisClient.set(req.params.user, req.params.domain, function(err) {
+    if (err) {
+      console.log(Date(), 'redis error:', err);
+      res.status(503).end(); // Service Unavailable
+    } else {
+      if (!testMode) {
+        console.log(Date(), 'redis set:', req.params.user, req.params.domain);
+      }
+      User.findOne({ user: req.params.user }, function(err, doc) {
+        if (err) {
+          console.log(Date(), 'db error:', err);
+          res.status(503).end(); // Service Unavailable
+        } else {
+          if (!doc) {
+            doc = new User();
+            doc.user = req.params.user;
+            doc.domain = req.params.domain;
+          } else {
+            doc.count += 1;
+            doc.updated = Date.now();
+          }
+          doc.save(function(err) {
+            if (err) {
+              console.log(Date(), 'db error:', err);
+              res.status(503).end(); // Service Unavailable
+            } else {
+              if (!testMode) {
+                console.log(Date(), 'db saved:', doc.user, doc.domain, doc.count);
+              }
+              res.send(req.method + ': ' + doc.user + ' ' + doc.domain + ' ' + doc.count + '\n');
+            }
+          });
+        }
+      });
+    }
+  });
+}
+
+function userDelete(req, res) {
+  redisClient.del(req.params.user, function(err, count) {
+    if (err) {
+      console.log(Date(), 'redis error:', err);
+      res.status(503).end(); // Service Unavailable
+    } else {
+      if (count < 1) {
+        console.log(Date(), 'redis not found:', req.params.user);
+        res.status(400).end(); // Bad Request
+      } else {
+        if (!testMode) {
+          console.log(Date(), 'redis del:', req.params.user, count);
+        }
+
+        User.remove({ user: req.params.user }, function(err) {
+          if (err) {
+            console.log(Date(), 'db error:', err);
+            res.status(503).end(); // Service Unavailable
+          } else {
+            if (!testMode) {
+              console.log(Date(), 'db removed:', req.params.user, req.params.domain);
+            }
+            res.send(req.method + ': ' + req.params.user + ' ' + req.params.domain + ' ' + '\n');
+          }
+        });
+      }
+    }
   });
 }
 
