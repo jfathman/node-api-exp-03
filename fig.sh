@@ -7,6 +7,10 @@ set -o pipefail
 
 main()
 {
+  if [ "$#" -eq 0 ]; then
+    usage 1
+  fi
+
   for arg
   do
     case ${arg} in
@@ -45,23 +49,31 @@ main()
       redis)
         sudo fig run --rm redis redis-cli -h redis
         ;;
-      help | --help | *)
-        echo "$0 build     Build Fig services"
-        echo "$0 purge     Remove untagged images after Docker reuses repo:tag for new build"
-        echo "$0 retrieve  Retrieve build artifacts from app container"
-        echo "$0 test      Run mock tests including load test in app container"
-        echo "$0 up        Run Node app.js in production mode in app container"
-        echo "$0 stop      Stop Fig services"
-        echo "$0 bash      Run bash in app container"
-        echo "$0 mongo     Run mongo client shell in mongodb container"
-        echo "$0 redis     Run redis client shell in redis container"
-#       echo "$0 push      Push Docker image to Artifactory repository"
-        echo "$0 help      Display help information"
-        exit
+      help | -help | --help)
+        usage 0
+        ;;
+      *)
+        usage 1
         ;;
     esac
   done
   exit
+}
+
+usage()
+{
+  echo "$0 build     Build Fig services"
+  echo "$0 purge     Remove untagged images after new build reuses repo:tag"
+  echo "$0 retrieve  Retrieve build artifacts from app container"
+  echo "$0 test      Run mock tests including load test in app container"
+  echo "$0 up        Run Node app.js in production mode in app container"
+  echo "$0 stop      Stop Fig services"
+  echo "$0 bash      Run bash in app container"
+  echo "$0 mongo     Run mongo client shell in mongodb container"
+  echo "$0 redis     Run redis client shell in redis container"
+# echo "$0 push      Push Docker image to Artifactory repository"
+  echo "$0 help      Display help information"
+  exit "$1"
 }
 
 getArtifactoryAccount()
