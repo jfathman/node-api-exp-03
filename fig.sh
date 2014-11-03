@@ -5,6 +5,16 @@
 set -e
 set -o pipefail
 
+APP_NAME=$(cat package.json | jq -r '.name')
+
+APP_VERSION=$(cat package.json | jq -r '.version')
+
+FIG_NAME=$(echo $APP_NAME | sed 's/-//g')_app
+
+echo $APP_NAME
+echo $APP_VERSION
+echo $FIG_NAME
+
 main()
 {
   if [ "$#" -eq 0 ]; then
@@ -16,6 +26,7 @@ main()
     case ${arg} in
       build)
         sudo fig build
+        sudo docker tag ${FIG_NAME}:latest ${FIG_NAME}:${APP_VERSION}
         ;;
       purge)
         UNTAGGED=$(sudo docker images --filter "dangling=true" -q)
