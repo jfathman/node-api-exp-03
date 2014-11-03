@@ -13,5 +13,7 @@ app:
   links:
    - mongodb
    - redis
+  volumes:
+   - ./:/mnt
   environment:
    - NODE_ENV=prod
