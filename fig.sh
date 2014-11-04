@@ -56,6 +56,12 @@ main()
       redis)
         sudo fig run --rm redis redis-cli -h redis
         ;;
+      push)
+        getArtifactoryAccount
+        sudo docker tag ${FIG_NAME}:${APP_VERSION} ${ARTIFACTORY_ACCOUNT}.artifactoryonline.com/${FIG_NAME}:${APP_VERSION}
+        sudo docker push ${ARTIFACTORY_ACCOUNT}.artifactoryonline.com/${FIG_NAME}:${APP_VERSION}
+        sudo docker rmi ${ARTIFACTORY_ACCOUNT}.artifactoryonline.com/${FIG_NAME}:${APP_VERSION}
+        ;;
       help | -help | --help)
         usage 0
         ;;
@@ -78,7 +84,7 @@ usage()
   echo "$0 bash      Run bash in app container"
   echo "$0 mongo     Run mongo client shell in mongodb container"
   echo "$0 redis     Run redis client shell in redis container"
-# echo "$0 push      Push Docker image to Artifactory repository"
+  echo "$0 push      Push Docker image to Artifactory repository"
   echo "$0 help      Display help information"
   exit "$1"
 }
