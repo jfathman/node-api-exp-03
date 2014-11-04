@@ -56,7 +56,13 @@ function startRedis(callback) {
 
   redisClient.on('error', function(err) {
     console.log(Date(), 'redis error:', err);
-    process.exit(1);
+    if (testMode) {
+      // Continue so grunt-express-server reports Mocha test error.
+      redisClient.end();
+      callback(null);
+    } else {
+      process.exit(1);
+    }
   });
 
   redisClient.on('ready', function() {
@@ -74,7 +80,12 @@ function startMongoDb(callback) {
 
   db.connection.on('error', function(err) {
     console.log(Date(), 'db error:', err);
-    process.exit(1);
+    if (testMode) {
+      // Continue so grunt-express-server reports Mocha test error.
+      callback(null);
+    } else {
+      process.exit(1);
+    }
   });
 
   db.connection.on('connected', function() {
