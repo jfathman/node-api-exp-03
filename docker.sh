@@ -13,6 +13,10 @@ APP_VERSION=$(cat package.json | jq -r '.version')
 
 main()
 {
+  if [ "$#" -eq 0 ]; then
+    usage 1
+  fi
+
   for arg
   do
     case ${arg} in
@@ -30,12 +34,6 @@ main()
       retrieve)
         sudo docker run --rm -v ${PWD}:/mnt ${APP_NAME}:${APP_VERSION} /bin/bash -c 'cp artifacts/* /mnt/.'
         ;;
-      test)
-        sudo docker run --rm ${APP_NAME}:${APP_VERSION} grunt test
-        ;;
-      run)
-        sudo docker run --name app-$$ --rm -p ${PORT}:${PORT} -e NODE_ENV=prod ${APP_NAME}:${APP_VERSION}
-        ;;
       bash)
         sudo docker run --name app-$$ --rm -i -t -p ${PORT}:${PORT} ${APP_NAME}:${APP_VERSION} /bin/bash
         ;;
@@ -45,20 +43,26 @@ main()
         sudo docker push ${ARTIFACTORY_ACCOUNT}.artifactoryonline.com/${APP_NAME}:${APP_VERSION}
         sudo docker rmi ${ARTIFACTORY_ACCOUNT}.artifactoryonline.com/${APP_NAME}:${APP_VERSION}
         ;;
-      help | --help | *)
-        echo "$0 build     Build Docker image"
-        echo "$0 purge     Remove untagged images after Docker reuses repo:tag for new build"
-        echo "$0 retrieve  Retrieve build artifacts from Docker container"
-        echo "$0 test      Run mock tests including load test in Docker container"
-        echo "$0 run       Run Node app.js in production mode in Docker container"
-        echo "$0 bash      Run bash in Docker container"
-        echo "$0 push      Push Docker image to Artifactory repository"
-        echo "$0 help      Display help information"
-        exit
+      help | -help | --help)
+        usage 0
+        ;;
+      *)
+        usage 1
         ;;
     esac
   done
   exit
+}
+
+usage()
+{
+  echo "$0 build     Build Docker image"
+  echo "$0 purge     Remove untagged images after Docker reuses repo:tag for new build"
+  echo "$0 retrieve  Retrieve build artifacts from Docker container"
+  echo "$0 bash      Run bash in Docker container"
+  echo "$0 push      Push Docker image to Artifactory repository"
+  echo "$0 help      Display help information"
+  exit "$1"
 }
 
 getArtifactoryAccount()

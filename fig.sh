@@ -11,10 +11,6 @@ APP_VERSION=$(cat package.json | jq -r '.version')
 
 FIG_NAME=$(echo $APP_NAME | sed 's/-//g')_app
 
-echo $APP_NAME
-echo $APP_VERSION
-echo $FIG_NAME
-
 main()
 {
   if [ "$#" -eq 0 ]; then
