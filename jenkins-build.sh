@@ -9,6 +9,15 @@ set -e
 main()
 {
   set +x
+  annotate "Report test environment versions for build log."
+
+  lsb_release -d
+
+  docker --version
+
+  fig --version
+
+  set +x
   annotate "Get application name and version from package.json."
 
   APP_NAME=$(cat package.json | jq -r '.name')
