@@ -48,7 +48,7 @@ main()
   set +x
   annotate "Run mock tests including load test in Docker container."
 
-  fig run --rm app grunt --no-color test
+  fig run -T --rm app grunt --no-color test
   fig stop
   fig rm --force
 
@@ -57,7 +57,7 @@ main()
 
   mkdir -p artifacts
 
-  fig run --rm --no-deps app bash -c 'cp artifacts/* /mnt/.'
+  fig run -T --rm --no-deps app bash -c 'cp artifacts/* /mnt/.'
 
   set +x
   annotate "Tag Docker image for Artifactory."
