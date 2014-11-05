@@ -6,6 +6,8 @@ set -e
 
 # Assumes prior export ARTIFACTORY_ACCOUNT is available.
 
+# Requires Fig >= 1.0.1 to capture Fig output in Jenkins build log.
+
 main()
 {
   set +x
@@ -16,6 +18,8 @@ main()
   docker --version
 
   fig --version
+
+  jq --version
 
   set +x
   annotate "Get application name and version from package.json."
