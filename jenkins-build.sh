@@ -55,9 +55,11 @@ main()
   set +x
   annotate "Retrieve build artifacts from Docker container."
 
-  mkdir -p artifacts
+  mkdir -p ./artifacts
 
   fig run -T --rm --no-deps app bash -c 'cp artifacts/* /mnt/.'
+
+  ls -l ./artifacts
 
   set +x
   annotate "Tag Docker image for Artifactory."
