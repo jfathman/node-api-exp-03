@@ -23,9 +23,8 @@ RUN cd /opt \
   && cd /usr/local/bin \
   && ln -s /opt/node/bin/* .
 
-WORKDIR ${APP_DIR}
-
-RUN npm install
+# WORKDIR ${APP_DIR}
+WORKDIR /opt/app
 
 RUN npm install >>/install.log
 
