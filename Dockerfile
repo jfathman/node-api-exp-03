@@ -25,6 +25,8 @@ RUN cd /opt \
 
 WORKDIR ${APP_DIR}
 
+RUN npm install
+
 RUN npm install >>/install.log
 
 RUN ln -s ${APP_DIR}/node_modules/.bin/* /usr/local/bin/.
