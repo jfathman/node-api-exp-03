@@ -23,6 +23,7 @@ RUN cd /opt \
   && cd /usr/local/bin \
   && ln -s /opt/node/bin/* .
 
+# Revert to not using env var until Quay.io hosted build upgrades to Docker >= 1.3.0.
 # WORKDIR ${APP_DIR}
 WORKDIR /opt/app
 
